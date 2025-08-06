@@ -3,20 +3,18 @@ import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useState } from 'react';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Entypo from '@expo/vector-icons/Entypo';
-import { getConfigFilePaths } from 'expo/config';
 
 
 export default function CameraScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
+  const [torchEnabled, setTorchEnabled] = useState(false);
 
   if (!permission) {
-    // Camera permissions are still loading.
     return <View />;
   }
 
   if (!permission.granted) {
-    // Camera permissions are not granted yet.
     return (
       <View style={styles.container}>
         <Text style={styles.message}>We need your permission to show the camera</Text>
@@ -29,15 +27,21 @@ export default function CameraScreen() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
   }
 
+  function toggleTorch() {
+    setTorchEnabled(current => !current);
+  }
+
+
+
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing}>
+      <CameraView style={styles.camera} facing={facing} enableTorch={torchEnabled}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
           <MaterialCommunityIcons name="camera-flip-outline" size={35} color="black" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.flash} onPress={toggleCameraFacing}>
+          <TouchableOpacity style={styles.flash} onPress={toggleTorch}>
           <Entypo name="flash" size={35} color="black" />
           </TouchableOpacity>
       
